@@ -6,42 +6,49 @@
     <title>Row Transposition Cipher</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            background-color: #f4f4f9;
-        }
-        h1 {
-            text-align: center;
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #f8f9fa;
             color: #333;
         }
-        form {
-            max-width: 500px;
-            margin: 0 auto;
+        header {
+            background-color: #007BFF;
+            color: #fff;
+            padding: 20px 0;
+            text-align: center;
+        }
+        main {
+            max-width: 600px;
+            margin: 20px auto;
             background: #fff;
             padding: 20px;
             border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
         }
         label {
             display: block;
-            margin-bottom: 10px;
             font-weight: bold;
+            margin-bottom: 10px;
         }
         input, textarea {
-            width: 100%;
+            width: 96.5%;
             padding: 10px;
             margin-bottom: 20px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        input:focus, textarea:focus {
+            border-color: #007BFF;
+            outline: none;
         }
         button {
-            display: block;
-            width: 100%;
+            width: 48%;
             padding: 10px;
             background-color: #007BFF;
             color: #fff;
             border: none;
-            border-radius: 5px;
+            border-radius: 4px;
             font-size: 16px;
             cursor: pointer;
             margin-bottom: 10px;
@@ -49,52 +56,68 @@
         button:hover {
             background-color: #0056b3;
         }
+        button:focus {
+            outline: none;
+        }
         .result {
-            max-width: 500px;
-            margin: 20px auto;
-            text-align: center;
-            font-size: 18px;
-            color: #333;
+            padding: 10px;
+            background: #e9ecef;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-top: 20px;
+            font-size: 16px;
         }
-        .matrix {
-            max-width: 500px;
-            margin: 20px auto;
-            border-collapse: collapse;
+        table {
             width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
             text-align: center;
         }
-        .matrix th, .matrix td {
-            border: 1px solid #ccc;
-            padding: 8px;
+        th {
+            background-color: #f8f9fa;
+        }
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
         }
         footer {
             text-align: center;
-            margin-top: 30px;
-            font-size: 16px;
+            margin-top: 20px;
+            font-size: 14px;
             color: #555;
         }
         footer span {
-            font-weight: bold;
             color: #007BFF;
+            font-weight: bold;
         }
     </style>
 </head>
 <body>
-    <h1>Row Transposition Cipher</h1>
-    <form id="cipherForm">
-        <label for="plaintext">Enter the message:</label>
-        <textarea id="plaintext" rows="4" placeholder="Enter your plaintext or ciphertext..."></textarea>
+    <header>
+        <h1>Row Transposition Cipher</h1>
+    </header>
+    <main>
+        <form id="cipherForm">
+            <label for="plaintext">Enter the message:</label>
+            <textarea id="plaintext" rows="4" placeholder="Enter your plaintext or ciphertext..."></textarea>
 
-        <label for="key">Enter the key:</label>
-        <input type="text" id="key" placeholder="Enter the key (e.g., 4231)" />
+            <label for="key">Enter the key:</label>
+            <input type="text" id="key" placeholder="Enter the key (e.g., 4231)" />
 
-        <button type="button" onclick="encrypt()">Encrypt</button>
-        <button type="button" onclick="decrypt()">Decrypt</button>
-    </form>
-    <div class="result" id="output"></div>
-    <table class="matrix" id="matrix"></table>
-
-    <footer>Developed by <span>Belal Amr</span></footer>
+            <div style="display: flex; justify-content: space-between;">
+                <button type="button" onclick="encrypt()">Encrypt</button>
+                <button type="button" onclick="decrypt()">Decrypt</button>
+            </div>
+        </form>
+        <div class="result" id="output"></div>
+        <table id="matrix"></table>
+    </main>
+    <footer>
+        Developed by <span>Belal Amr</span>
+    </footer>
 
     <script>
         function prepareMessage(message) {
@@ -114,17 +137,20 @@
             return matrix;
         }
 
-        function displayMatrix(matrix) {
+        function displayMatrix(matrix, key) {
             const table = document.getElementById("matrix");
             table.innerHTML = "";
+
+            // Display the header row (original key order)
             const headerRow = document.createElement("tr");
-            for (let i = 0; i < matrix[0].length; i++) {
+            key.split("").forEach(char => {
                 const th = document.createElement("th");
-                th.innerText = i + 1;
+                th.innerText = char;
                 headerRow.appendChild(th);
-            }
+            });
             table.appendChild(headerRow);
 
+            // Append the matrix rows
             matrix.forEach(row => {
                 const tr = document.createElement("tr");
                 row.forEach(cell => {
@@ -142,9 +168,9 @@
             const matrix = createMatrix(message, rows, cols);
 
             const keyOrder = key.split("").map((char, i) => ({ char, index: i }))
-                                    .sort((a, b) => a.char.localeCompare(b.char));
+                                .sort((a, b) => a.char.localeCompare(b.char));
 
-            displayMatrix(matrix);
+            displayMatrix(matrix, key);
 
             let ciphertext = "";
             keyOrder.forEach(pair => {
@@ -162,7 +188,7 @@
             const matrix = Array.from({ length: rows }, () => Array(cols).fill(''));
 
             const keyOrder = key.split("").map((char, i) => ({ char, index: i }))
-                                    .sort((a, b) => a.char.localeCompare(b.char));
+                                .sort((a, b) => a.char.localeCompare(b.char));
 
             let index = 0;
             keyOrder.forEach(pair => {
@@ -179,6 +205,7 @@
                 }
             }
 
+            displayMatrix(matrix, key); // Display the matrix for decryption
             return plaintext.replace(/X+$/, "");
         }
 
@@ -198,7 +225,7 @@
         }
 
         function decrypt() {
-            const ciphertext = document.getElementById("plaintext").value.trim(); // Trim spaces here
+            const ciphertext = document.getElementById("plaintext").value.trim();
             const key = document.getElementById("key").value;
 
             if (!ciphertext || !key) {
